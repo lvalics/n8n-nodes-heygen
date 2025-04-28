@@ -12,9 +12,9 @@ import { heyGenApiRequest } from './GenericFunctions';
 export class HeyGen implements INodeType {
     description: INodeTypeDescription = {
         displayName: 'HeyGen',
-        name: 'heyGen',
+        name: 'HeyGen',
         icon: 'file:heygen.svg',
-        group: ['transform'],
+        group: ['ai', 'contentCreation'],
         version: 1,
         subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
         description: 'Consume HeyGen API',
@@ -43,6 +43,10 @@ export class HeyGen implements INodeType {
                     {
                         name: 'Photo Avatar',
                         value: 'photoAvatar',
+                    },
+                    {
+                        name: 'Video',
+                        value: 'video',
                     },
                 ],
                 default: 'document',
@@ -207,6 +211,18 @@ export class HeyGen implements INodeType {
                         value: 'upscaleAvatar',
                         description: 'Upscale an avatar',
                         action: 'Upscale an avatar',
+                    },
+                    {
+                        name: 'List All Avatars and Talking Photos',
+                        value: 'listAllAvatars',
+                        description: 'List all avatars and talking photos',
+                        action: 'List all avatars and talking photos',
+                    },
+                    {
+                        name: 'List All Voices',
+                        value: 'listAllVoices',
+                        description: 'List all AI voices',
+                        action: 'List all AI voices',
                     },
                 ],
                 default: 'generatePhoto',
@@ -599,6 +615,513 @@ export class HeyGen implements INodeType {
                 required: true,
                 description: 'ID of the avatar',
             },
+
+            // No parameters needed for List All Avatars and List All Voices as filtering is done server-side
+
+            // VIDEO OPERATIONS
+            {
+                displayName: 'Operation',
+                name: 'operation',
+                type: 'options',
+                noDataExpression: true,
+                displayOptions: {
+                    show: {
+                        resource: [
+                            'video',
+                        ],
+                    },
+                },
+                options: [
+                    {
+                        name: 'Create Video',
+                        value: 'createVideo',
+                        description: 'Create a video with AI Studio',
+                        action: 'Create a video with AI Studio',
+                    },
+                    {
+                        name: 'Create WebM Video',
+                        value: 'createWebmVideo',
+                        description: 'Create a WebM video',
+                        action: 'Create a WebM video',
+                    },
+                    {
+                        name: 'Get Video Status',
+                        value: 'getVideoStatus',
+                        description: 'Get video status and details',
+                        action: 'Get video status and details',
+                    },
+                ],
+                default: 'createVideo',
+            },
+
+            // Create Video Parameters
+            {
+                displayName: 'Caption',
+                name: 'caption',
+                type: 'boolean',
+                displayOptions: {
+                    show: {
+                        resource: ['video'],
+                        operation: ['createVideo'],
+                    },
+                },
+                default: false,
+                description: 'Whether to add a caption to the video. Default is False. Only text input supports caption',
+            },
+            {
+                displayName: 'Title',
+                name: 'title',
+                type: 'string',
+                displayOptions: {
+                    show: {
+                        resource: ['video'],
+                        operation: ['createVideo'],
+                    },
+                },
+                default: '',
+                description: 'Title for the video',
+            },
+            {
+                displayName: 'Callback ID',
+                name: 'callbackId',
+                type: 'string',
+                displayOptions: {
+                    show: {
+                        resource: ['video'],
+                        operation: ['createVideo'],
+                    },
+                },
+                default: '',
+                description: 'A custom ID for callback purposes',
+            },
+            {
+                displayName: 'Callback URL',
+                name: 'callbackUrl',
+                type: 'string',
+                displayOptions: {
+                    show: {
+                        resource: ['video'],
+                        operation: ['createVideo'],
+                    },
+                },
+                default: '',
+                description: 'An optional callback URL to receive a notification when the video is ready',
+            },
+            {
+                displayName: 'Folder ID',
+                name: 'folderId',
+                type: 'string',
+                displayOptions: {
+                    show: {
+                        resource: ['video'],
+                        operation: ['createVideo'],
+                    },
+                },
+                default: '',
+                description: 'Specify the video output folder destination',
+            },
+            {
+                displayName: 'Video Dimensions',
+                name: 'dimension',
+                type: 'fixedCollection',
+                typeOptions: {
+                    multipleValues: false,
+                },
+                displayOptions: {
+                    show: {
+                        resource: ['video'],
+                        operation: ['createVideo'],
+                    },
+                },
+                default: {},
+                options: [
+                    {
+                        name: 'dimensionValues',
+                        displayName: 'Dimension',
+                        values: [
+                            {
+                                displayName: 'Width',
+                                name: 'width',
+                                type: 'number',
+                                default: 1280,
+                                description: 'Width of the video in pixels',
+                            },
+                            {
+                                displayName: 'Height',
+                                name: 'height',
+                                type: 'number',
+                                default: 720,
+                                description: 'Height of the video in pixels',
+                            },
+                        ],
+                    },
+                ],
+                description: 'The dimensions of the output video',
+            },
+            {
+                displayName: 'Video Input Scenes',
+                name: 'videoInput',
+                type: 'fixedCollection',
+                typeOptions: {
+                    multipleValues: true,
+                },
+                displayOptions: {
+                    show: {
+                        resource: ['video'],
+                        operation: ['createVideo'],
+                    },
+                },
+                default: {},
+                options: [
+                    {
+                        name: 'videoInputValues',
+                        displayName: 'Video Input',
+                        values: [
+                            {
+                                displayName: 'Character Type',
+                                name: 'characterType',
+                                type: 'options',
+                                options: [
+                                    {
+                                        name: 'Avatar',
+                                        value: 'avatar',
+                                    },
+                                    {
+                                        name: 'Talking Photo',
+                                        value: 'talking_photo',
+                                    },
+                                ],
+                                default: 'avatar',
+                                description: 'Type of character to use in the video',
+                            },
+                            {
+                                displayName: 'Avatar ID',
+                                name: 'avatarId',
+                                type: 'string',
+                                displayOptions: {
+                                    show: {
+                                        characterType: ['avatar'],
+                                    },
+                                },
+                                default: '',
+                                description: 'Avatar ID to use in the video. Please note that this is NOT the Avatar Group ID',
+                            },
+                            {
+                                displayName: 'Talking Photo ID',
+                                name: 'talkingPhotoId',
+                                type: 'string',
+                                displayOptions: {
+                                    show: {
+                                        characterType: ['talking_photo'],
+                                    },
+                                },
+                                default: '',
+                                description: 'Talking Photo ID to use in the video',
+                            },
+                            {
+                                displayName: 'Voice Type',
+                                name: 'voiceType',
+                                type: 'options',
+                                options: [
+                                    {
+                                        name: 'Text',
+                                        value: 'text',
+                                    },
+                                    {
+                                        name: 'Audio',
+                                        value: 'audio',
+                                    },
+                                    {
+                                        name: 'Silence',
+                                        value: 'silence',
+                                    },
+                                ],
+                                default: 'text',
+                                description: 'Type of voice input for the character',
+                            },
+                            {
+                                displayName: 'Voice ID',
+                                name: 'voiceId',
+                                type: 'string',
+                                displayOptions: {
+                                    show: {
+                                        voiceType: ['text'],
+                                    },
+                                },
+                                default: '',
+                                description: 'Voice ID to use for text-to-speech',
+                            },
+                            {
+                                displayName: 'Input Text',
+                                name: 'inputText',
+                                type: 'string',
+                                typeOptions: {
+                                    rows: 4,
+                                },
+                                displayOptions: {
+                                    show: {
+                                        voiceType: ['text'],
+                                    },
+                                },
+                                default: '',
+                                description: 'Text that the character will speak',
+                            },
+                            {
+                                displayName: 'Voice Speed',
+                                name: 'speed',
+                                type: 'number',
+                                typeOptions: {
+                                    minValue: 0.5,
+                                    maxValue: 1.5,
+                                },
+                                displayOptions: {
+                                    show: {
+                                        voiceType: ['text'],
+                                    },
+                                },
+                                default: 1,
+                                description: 'Speed of the voice, between 0.5 and 1.5',
+                            },
+                            {
+                                displayName: 'Audio URL',
+                                name: 'audioUrl',
+                                type: 'string',
+                                displayOptions: {
+                                    show: {
+                                        voiceType: ['audio'],
+                                    },
+                                },
+                                default: '',
+                                description: 'URL of the audio file to use',
+                            },
+                            {
+                                displayName: 'Silence Duration',
+                                name: 'duration',
+                                type: 'number',
+                                typeOptions: {
+                                    minValue: 1,
+                                    maxValue: 100,
+                                },
+                                displayOptions: {
+                                    show: {
+                                        voiceType: ['silence'],
+                                    },
+                                },
+                                default: 1,
+                                description: 'Duration of silence in seconds (1-100)',
+                            },
+                            {
+                                displayName: 'Background Type',
+                                name: 'backgroundType',
+                                type: 'options',
+                                options: [
+                                    {
+                                        name: 'Color',
+                                        value: 'color',
+                                    },
+                                    {
+                                        name: 'Image',
+                                        value: 'image',
+                                    },
+                                    {
+                                        name: 'Video',
+                                        value: 'video',
+                                    },
+                                ],
+                                default: 'color',
+                                description: 'Type of background to use',
+                            },
+                            {
+                                displayName: 'Background Color',
+                                name: 'backgroundColor',
+                                type: 'color',
+                                displayOptions: {
+                                    show: {
+                                        backgroundType: ['color'],
+                                    },
+                                },
+                                default: '#f6f6fc',
+                                description: 'Color to use as background (hex format)',
+                            },
+                            {
+                                displayName: 'Background Image URL',
+                                name: 'backgroundImageUrl',
+                                type: 'string',
+                                displayOptions: {
+                                    show: {
+                                        backgroundType: ['image'],
+                                    },
+                                },
+                                default: '',
+                                description: 'URL of the image to use as background',
+                            },
+                            {
+                                displayName: 'Background Video URL',
+                                name: 'backgroundVideoUrl',
+                                type: 'string',
+                                displayOptions: {
+                                    show: {
+                                        backgroundType: ['video'],
+                                    },
+                                },
+                                default: '',
+                                description: 'URL of the video to use as background',
+                            },
+                        ],
+                    },
+                ],
+                description: 'Video input settings (scenes). Each input describes a scene in the video',
+            },
+
+            // Get Video Status Parameters
+            {
+                displayName: 'Video ID',
+                name: 'videoId',
+                type: 'string',
+                displayOptions: {
+                    show: {
+                        resource: ['video'],
+                        operation: ['getVideoStatus'],
+                    },
+                },
+                default: '',
+                required: true,
+                description: 'ID of the video to check status for',
+            },
+
+            // Create WebM Video Parameters
+            {
+                displayName: 'Avatar Pose ID',
+                name: 'avatarPoseId',
+                type: 'string',
+                displayOptions: {
+                    show: {
+                        resource: ['video'],
+                        operation: ['createWebmVideo'],
+                    },
+                },
+                default: 'Vanessa-invest-20220722',
+                description: 'The ID of the avatar\'s pose',
+            },
+            {
+                displayName: 'Avatar Style',
+                name: 'avatarStyle',
+                type: 'options',
+                displayOptions: {
+                    show: {
+                        resource: ['video'],
+                        operation: ['createWebmVideo'],
+                    },
+                },
+                options: [
+                    { name: 'Normal', value: 'normal' },
+                    { name: 'Circle', value: 'circle' },
+                    { name: 'Close Up', value: 'closeUp' },
+                    { name: 'Voice Only', value: 'voiceOnly' },
+                ],
+                default: 'normal',
+                description: 'The style of the avatar',
+            },
+            {
+                displayName: 'Input Method',
+                name: 'inputMethod',
+                type: 'options',
+                displayOptions: {
+                    show: {
+                        resource: ['video'],
+                        operation: ['createWebmVideo'],
+                    },
+                },
+                options: [
+                    { name: 'Text', value: 'text' },
+                    { name: 'Audio', value: 'audio' },
+                ],
+                default: 'text',
+                description: 'Method to provide input (text or audio)',
+            },
+            {
+                displayName: 'Input Text',
+                name: 'inputText',
+                type: 'string',
+                typeOptions: {
+                    rows: 4,
+                },
+                displayOptions: {
+                    show: {
+                        resource: ['video'],
+                        operation: ['createWebmVideo'],
+                        inputMethod: ['text'],
+                    },
+                },
+                default: 'This is a WebM video generated by HeyGen API',
+                description: 'The text that the avatar will speak in the video',
+            },
+            {
+                displayName: 'Voice ID',
+                name: 'voiceId',
+                type: 'string',
+                displayOptions: {
+                    show: {
+                        resource: ['video'],
+                        operation: ['createWebmVideo'],
+                        inputMethod: ['text'],
+                    },
+                },
+                default: '1bd001e7e50f421d891986aad5158bc8',
+                description: 'The ID of the voice that the avatar will use',
+            },
+            {
+                displayName: 'Input Audio',
+                name: 'inputAudio',
+                type: 'string',
+                displayOptions: {
+                    show: {
+                        resource: ['video'],
+                        operation: ['createWebmVideo'],
+                        inputMethod: ['audio'],
+                    },
+                },
+                default: '',
+                description: 'URL of the input audio file',
+            },
+            {
+                displayName: 'Video Dimensions',
+                name: 'webmDimension',
+                type: 'fixedCollection',
+                typeOptions: {
+                    multipleValues: false,
+                },
+                displayOptions: {
+                    show: {
+                        resource: ['video'],
+                        operation: ['createWebmVideo'],
+                    },
+                },
+                default: {},
+                options: [
+                    {
+                        name: 'dimensionValues',
+                        displayName: 'Dimension',
+                        values: [
+                            {
+                                displayName: 'Width',
+                                name: 'width',
+                                type: 'number',
+                                default: 1280,
+                                description: 'Width of the video in pixels',
+                            },
+                            {
+                                displayName: 'Height',
+                                name: 'height',
+                                type: 'number',
+                                default: 720,
+                                description: 'Height of the video in pixels',
+                            },
+                        ],
+                    },
+                ],
+                description: 'The dimensions of the output video',
+            },
         ],
     };
 
@@ -842,6 +1365,30 @@ export class HeyGen implements INodeType {
                             'api',
                             'v2'
                         );
+                    } else if (operation === 'listAllAvatars') {
+                        // List all avatars
+                        responseData = await heyGenApiRequest.call(
+                            this,
+                            'GET',
+                            '/avatars',
+                            {},
+                            {},
+                            {},
+                            'api',
+                            'v2'
+                        );
+                    } else if (operation === 'listAllVoices') {
+                        // List all voices
+                        responseData = await heyGenApiRequest.call(
+                            this,
+                            'GET',
+                            '/voices',
+                            {},
+                            {},
+                            {},
+                            'api',
+                            'v2'
+                        );
                     }
                 } else if (resource === 'document') {
                     if (operation === 'upload') {
@@ -917,14 +1464,194 @@ export class HeyGen implements INodeType {
                             );
                         }
                     }
-                }
+                } else if (resource === 'video') {
+                if (operation === 'createVideo') {
+                    // Create a video with AI Studio
+                    const body: IDataObject = {
+                        caption: this.getNodeParameter('caption', i) as boolean,
+                    };
 
-                const executionData = this.helpers.constructExecutionMetaData(
-                    this.helpers.returnJsonArray(responseData),
-                    { itemData: { item: i } }
-                );
-                returnData.push(...executionData);
-            } catch (error) {
+                    // Add optional fields
+                    const title = this.getNodeParameter('title', i, '') as string;
+                    if (title) {
+                        body.title = title;
+                    }
+
+                    const callbackId = this.getNodeParameter('callbackId', i, '') as string;
+                    if (callbackId) {
+                        body.callback_id = callbackId;
+                    }
+
+                    const callbackUrl = this.getNodeParameter('callbackUrl', i, '') as string;
+                    if (callbackUrl) {
+                        body.callback_url = callbackUrl;
+                    }
+
+                    const folderId = this.getNodeParameter('folderId', i, '') as string;
+                    if (folderId) {
+                        body.folder_id = folderId;
+                    }
+
+                    // Set video dimensions
+                    const dimension = this.getNodeParameter('dimension', i) as IDataObject;
+                    if (dimension && dimension.dimensionValues) {
+                        body.dimension = (dimension.dimensionValues as IDataObject);
+                    } else {
+                        body.dimension = {
+                            width: 1280,
+                            height: 720,
+                        };
+                    }
+
+                    // Set video inputs (scenes)
+                    const videoInputs = this.getNodeParameter('videoInput.videoInputValues', i, []) as IDataObject[];
+                    if (videoInputs && videoInputs.length > 0) {
+                        body.video_inputs = videoInputs.map((input: IDataObject) => {
+                            const videoInput: IDataObject = {};
+
+                            // Set character
+                            if (input.characterType === 'avatar') {
+                                videoInput.character = {
+                                    type: 'avatar',
+                                    avatar_id: input.avatarId,
+                                    scale: input.scale || 1.0,
+                                    avatar_style: input.avatarStyle || 'normal',
+                                    offset: {
+                                        x: input.offsetX || 0.0,
+                                        y: input.offsetY || 0.0,
+                                    },
+                                };
+                            } else if (input.characterType === 'talking_photo') {
+                                videoInput.character = {
+                                    type: 'talking_photo',
+                                    talking_photo_id: input.talkingPhotoId,
+                                    scale: input.scale || 1.0,
+                                    talking_photo_style: input.talkingPhotoStyle || 'square',
+                                    offset: {
+                                        x: input.offsetX || 0.0,
+                                        y: input.offsetY || 0.0,
+                                    },
+                                    talking_style: input.talkingStyle || 'stable',
+                                    expression: input.expression || 'default',
+                                };
+                            }
+
+                            // Set voice
+                            if (input.voiceType === 'text') {
+                                videoInput.voice = {
+                                    type: 'text',
+                                    voice_id: input.voiceId,
+                                    input_text: input.inputText,
+                                    speed: input.speed || 1.0,
+                                };
+                            } else if (input.voiceType === 'audio') {
+                                videoInput.voice = {
+                                    type: 'audio',
+                                    audio_url: input.audioUrl,
+                                };
+                            } else if (input.voiceType === 'silence') {
+                                videoInput.voice = {
+                                    type: 'silence',
+                                    duration: input.duration || 1.0,
+                                };
+                            }
+
+                            // Set background
+                            if (input.backgroundType === 'color') {
+                                videoInput.background = {
+                                    type: 'color',
+                                    value: input.backgroundColor || '#f6f6fc',
+                                };
+                            } else if (input.backgroundType === 'image') {
+                                videoInput.background = {
+                                    type: 'image',
+                                    url: input.backgroundImageUrl,
+                                    fit: input.backgroundFit || 'cover',
+                                };
+                            } else if (input.backgroundType === 'video') {
+                                videoInput.background = {
+                                    type: 'video',
+                                    url: input.backgroundVideoUrl,
+                                    play_style: input.backgroundPlayStyle || 'fit_to_scene',
+                                    fit: input.backgroundFit || 'cover',
+                                };
+                            }
+
+                            return videoInput;
+                        });
+                    } else {
+                        throw new NodeOperationError(this.getNode(), 'At least one video input scene is required');
+                    }
+
+                    responseData = await heyGenApiRequest.call(
+                        this,
+                        'POST',
+                        '/video/generate',
+                        body,
+                        {},
+                        {},
+                        'api',
+                        'v2'
+                    );
+                } else if (operation === 'getVideoStatus') {
+                    // Get video status
+                    const videoId = this.getNodeParameter('videoId', i) as string;
+
+                    responseData = await heyGenApiRequest.call(
+                        this,
+                        'GET',
+                        '/video_status.get',
+                        {},
+                        { video_id: videoId },
+                        {},
+                        'api',
+                        'v1'
+                    );
+                } else if (operation === 'createWebmVideo') {
+                    // Create a WebM video
+                    const body: IDataObject = {
+                        avatar_pose_id: this.getNodeParameter('avatarPoseId', i) as string,
+                        avatar_style: this.getNodeParameter('avatarStyle', i) as string,
+                    };
+
+                    const inputMethod = this.getNodeParameter('inputMethod', i) as string;
+                    if (inputMethod === 'text') {
+                        body.input_text = this.getNodeParameter('inputText', i) as string;
+                        body.voice_id = this.getNodeParameter('voiceId', i) as string;
+                    } else if (inputMethod === 'audio') {
+                        body.input_audio = this.getNodeParameter('inputAudio', i) as string;
+                    }
+
+                    // Set video dimensions
+                    const webmDimension = this.getNodeParameter('webmDimension', i) as IDataObject;
+                    if (webmDimension && webmDimension.dimensionValues) {
+                        body.dimension = (webmDimension.dimensionValues as IDataObject);
+                    } else {
+                        body.dimension = {
+                            width: 1280,
+                            height: 720,
+                        };
+                    }
+
+                    responseData = await heyGenApiRequest.call(
+                        this,
+                        'POST',
+                        '/video.webm',
+                        body,
+                        {},
+                        {},
+                        'api',
+                        'v1'
+                    );
+                }
+            }
+
+            const executionData = this.helpers.constructExecutionMetaData(
+                this.helpers.returnJsonArray(responseData),
+                { itemData: { item: i } }
+            );
+            returnData.push(...executionData);
+        } catch (error) {
                 if (this.continueOnFail()) {
                     returnData.push({ json: { error: error.message } });
                     continue;

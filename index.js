@@ -6,10 +6,5 @@ export {
     HeyGen,
 };
 
-export const credentials = {
-    HeyGenApi,
-};
-
-export const nodes = {
-    HeyGen,
-};
+export const credentials = [HeyGenApi];
+export const nodes = [HeyGen];
