@@ -1,0 +1,10 @@
+node_modules
+.aider*
+.DS_Store
+.tmp
+tmp
+dist
+npm-debug.log*
+yarn.lock
+.vscode/launch.json
+docs/*

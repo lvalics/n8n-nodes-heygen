@@ -1,0 +1,80 @@
+{
+  "name": "n8n-nodes-heygen",
+  "version": "0.1.0",
+  "description": "",
+  "keywords": [
+    "n8n-community-node-package"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "author": {
+    "name": "",
+    "email": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lvalics/n8n-nodes-heygen.git"
+  },
+  "engines": {
+    "node": ">=18.10",
+    "pnpm": ">=9.1"
+  },
+  "packageManager": "pnpm@9.1.4",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "npm run clean && tsc && gulp build:icons",
+    "dev": "tsc --watch",
+    "format": "prettier nodes credentials --write",
+    "lint": "echo 'Linting disabled temporarily'",
+    "lintfix": "echo 'Linting disabled temporarily'",
+    "prepublishOnly": "npm run build",
+    "runn8n": "npx nodemon -q -e js,ts,yml,yaml,json,node,graphql,env,env.sample --exec n8n start"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/HeyGenApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/HeyGen/HeyGen.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "@typescript-eslint/parser": "~8.26.1",
+    "eslint": "^9.22.0",
+    "eslint-plugin-jsdoc": "^50.6.6",
+    "eslint-plugin-n8n-nodes-base": "^1.16.3",
+    "gulp": "^5.0.0",
+    "i": "^0.3.7",
+    "n8n-workflow": "~1.70.0",
+    "prettier": "^3.5.3",
+    "typescript": "~5.8.2"
+  },
+  "dependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+    "axios": "^1.8.3"
+  },
+  "pnpm": {
+    "overrides": {
+    "axios": "1.8.3"
+    },
+    "ignoredBuiltDependencies": [
+      "eslint-plugin-n8n-nodes-base"
+    ],
+    "onlyBuiltDependencies": [
+      "es5-ext",
+      "eslint-plugin-n8n-nodes-base"
+    ]
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  },
+  "bugs": {
+    "url": "https://github.com/lvalics/n8n-nodes-heygen/issues"
+  }
+}
