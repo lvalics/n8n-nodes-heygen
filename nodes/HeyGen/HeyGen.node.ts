@@ -224,6 +224,12 @@ export class HeyGen implements INodeType {
                         description: 'List all AI voices',
                         action: 'List all AI voices',
                     },
+                    {
+                        name: 'List Avatar Groups (personal avatar)',
+                        value: 'listAvatarGroups',
+                        description: 'List all avatar groups',
+                        action: 'List all avatar groups',
+                    },
                 ],
                 default: 'generatePhoto',
             },
@@ -1383,6 +1389,18 @@ export class HeyGen implements INodeType {
                             this,
                             'GET',
                             '/voices',
+                            {},
+                            {},
+                            {},
+                            'api',
+                            'v2'
+                        );
+                    } else if (operation === 'listAvatarGroups') {
+                        // List all avatar groups
+                        responseData = await heyGenApiRequest.call(
+                            this,
+                            'GET',
+                            '/avatar_group.list',
                             {},
                             {},
                             {},
