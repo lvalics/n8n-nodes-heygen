@@ -4,7 +4,7 @@ import {
     IHookFunctions,
     ILoadOptionsFunctions,
     IHttpRequestMethods,
-		IDataObject,
+    IDataObject,
     NodeApiError,
     JsonObject,
     IRequestOptions
@@ -18,6 +18,8 @@ export async function heyGenApiRequest(
     body: IDataObject = {},
     qs: IDataObject = {},
     options: IDataObject = {},
+    baseUrl: string = 'upload',
+    apiVersion: string = 'v1'
 ) {
     const credentials = await this.getCredentials('heyGenApi');
 
@@ -27,7 +29,7 @@ export async function heyGenApiRequest(
         },
         method,
         qs,
-        uri: `https://upload.heygen.com/v1${endpoint}`,
+        uri: `https://${baseUrl}.heygen.com/${apiVersion}${endpoint}`,
         json: false, // Default to false
     };
     
@@ -46,6 +48,14 @@ export async function heyGenApiRequest(
     }
 
     try {
+        console.log('Request options:', JSON.stringify({
+            method: requestOptions.method,
+            uri: requestOptions.uri,
+            headers: requestOptions.headers,
+            json: requestOptions.json,
+            body: requestOptions.body,
+        }));
+
         const response = await this.helpers.request!(requestOptions);
         
         // If we're getting a string response, try to parse it as JSON
@@ -60,6 +70,7 @@ export async function heyGenApiRequest(
         
         return response;
     } catch (error) {
+        console.error('API Request Error:', error);
         throw new NodeApiError(this.getNode(), error as JsonObject);
     }
 }
