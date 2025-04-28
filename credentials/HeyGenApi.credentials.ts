@@ -33,7 +33,7 @@ export class HeyGenApi implements ICredentialType {
 	test: ICredentialTestRequest = {
 		request: {
 			baseURL: 'https://api.heygen.com',
-			url: '/v1/user_info',
+			url: '/v1/user/me',
 			method: 'GET',
 		},
 	};
