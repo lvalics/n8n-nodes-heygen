@@ -4,8 +4,7 @@ This n8n community node enables seamless integration with **[HeyGen](https://www
 
 ## Features
 
-- Create and manage AI-generated videos
-- Access HeyGen's API functionalities directly from n8n
+- Create and manage AI-generated avatars, photo avatars
 - Automate video generation within your workflows
 
 ## Installation
@@ -18,12 +17,12 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Usage
 
-To use this node, you'll need a HeyGen API key. You can obtain one from your [HeyGen developer account](https://developers.heygen.com/).
+To use this node, you'll need a HeyGen API key. You can obtain one from your [HeyGen developer account](https://app.heygen.com/).
 
 ### Authentication
 
 1. Create credentials for the HeyGen node
-2. Enter your API key from HeyGen's developer portal
+2. Enter your API key from HeyGen's dashboard
 3. Save your credentials
 
 ### Node Configuration
