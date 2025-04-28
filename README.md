@@ -1,23 +1,43 @@
-# n8n-nodes-starter
+# n8n-nodes-heygen
 
-This n8n community node enables seamless integration of **[PiAPI](https://piapi.ai/workspace?via=valics) in your [n8n](https://n8n.io) workflows**.
+This n8n community node enables seamless integration with **[HeyGen](https://www.heygen.com/)** in your [n8n](https://n8n.io) workflows, allowing you to create AI-generated videos and manage HeyGen resources programmatically.
 
 ## Features
 
-- Describe here
+- Create and manage AI-generated videos
+- Access HeyGen's API functionalities directly from n8n
+- Automate video generation within your workflows
 
 ## Installation
 
 Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
 
-## More information
+1. Go to **Settings > Community Nodes > Install a community node**
+2. Enter `n8n-nodes-heygen` in the **npm package name** field
+3. Click **Install**
 
-Description of the node will go here.
+## Usage
+
+To use this node, you'll need a HeyGen API key. You can obtain one from your [HeyGen developer account](https://developers.heygen.com/).
+
+### Authentication
+
+1. Create credentials for the HeyGen node
+2. Enter your API key from HeyGen's developer portal
+3. Save your credentials
+
+### Node Configuration
+
+The node supports various operations and resources related to HeyGen's video generation functionality. Configure the node by selecting:
+
+1. The desired resource (e.g., video)
+2. The operation you want to perform
+3. Required parameters for that operation
 
 ## Compatibility
 
-1.80.0 and above
+Requires n8n version 1.80.0 or above.
 
 ## License
 
-[MIT](https://github.com/n8n-io/n8n-nodes-piapi/blob/master/LICENSE.md)
+[MIT](https://github.com/lvalics/n8n-nodes-heygen/blob/master/LICENSE.md)

@@ -98,6 +98,9 @@ fi
 # Method 3: Manual restart (kill and start again)
 pkill -f "n8n start" || true
 echo "Killed existing n8n process"
-nohup n8n start > /dev/null 2>&1 &
+export N8N_LOG_LEVEL=debug
+# nohup n8n start > /dev/null 2>&1 &
+nohup n8n start > ~/n8n.log 2>&1 &
+echo "You can now do: tail -f ~/n8n.log"
 echo "Started n8n in background"
 echo "n8n restarted successfully"
