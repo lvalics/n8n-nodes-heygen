@@ -4,13 +4,12 @@ import {
     IHookFunctions,
     ILoadOptionsFunctions,
     IHttpRequestMethods,
-} from 'n8n-workflow';
-import { 
-    IDataObject, 
+		IDataObject,
     NodeApiError,
     JsonObject,
     IRequestOptions
 } from 'n8n-workflow';
+
 
 export async function heyGenApiRequest(
     this: IHookFunctions | IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions,
@@ -28,21 +27,38 @@ export async function heyGenApiRequest(
         },
         method,
         qs,
-        body,
-        uri: `https://api.heygen.com/v1${endpoint}`,
-        json: true,
+        uri: `https://upload.heygen.com/v1${endpoint}`,
+        json: false, // Default to false
     };
-
-    if (options.formData) {
+    
+    if (options.binary) {
+        // For binary uploads, set the content-type header and raw body
+        requestOptions.headers!['Content-Type'] = options.mimeType as string;
+        requestOptions.body = options.binaryData;
+        requestOptions.json = false; // Ensure JSON is disabled
+    } else if (options.formData) {
+        // For form data uploads
         requestOptions.formData = options.formData as IDataObject;
-    }
-
-    if (Object.keys(body).length === 0 && !options.formData) {
-        delete requestOptions.body;
+    } else {
+        // For JSON requests
+        requestOptions.body = body;
+        requestOptions.json = true;
     }
 
     try {
-        return await this.helpers.request!(requestOptions);
+        const response = await this.helpers.request!(requestOptions);
+        
+        // If we're getting a string response, try to parse it as JSON
+        if (typeof response === 'string' && response.trim().startsWith('{')) {
+            try {
+                return JSON.parse(response);
+            } catch (parseError) {
+                // If parsing fails, return the original string
+                return response;
+            }
+        }
+        
+        return response;
     } catch (error) {
         throw new NodeApiError(this.getNode(), error as JsonObject);
     }

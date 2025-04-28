@@ -1,9 +1,9 @@
 import { HeyGenApi } from './credentials/HeyGenApi.credentials';
-import { HeyGenNode } from './nodes/HeyGen/HeyGen.node';
+import { HeyGen } from './nodes/HeyGen/HeyGen.node';
 
 export {
     HeyGenApi,
-    HeyGenNode,
+    HeyGen,
 };
 
 export const credentials = {
@@ -11,5 +11,5 @@ export const credentials = {
 };
 
 export const nodes = {
-    HeyGenNode,
+    HeyGen,
 };

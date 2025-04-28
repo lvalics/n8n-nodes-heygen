@@ -152,37 +152,60 @@ export class HeyGen implements INodeType {
                                 throw new NodeOperationError(this.getNode(), `No binary data property "${binaryPropertyName}" exists on item!`);
                             }
 
-                            const formData = {
-                                file: {
-                                    value: Buffer.from(binaryProperty.data, 'base64'),
-                                    options: {
-                                        filename: binaryProperty.fileName || 'file',
-                                        contentType: binaryProperty.mimeType,
-                                    },
-                                },
-                            };
-
+                            // For direct binary upload, send the binary data with the proper Content-Type
                             responseData = await heyGenApiRequest.call(
                                 this,
                                 'POST',
-                                '/document',
+                                '/asset',
                                 {},
                                 {},
-                                { formData }
+                                {
+                                    binary: true,
+                                    binaryData: Buffer.from(binaryProperty.data, 'base64'),
+                                    mimeType: binaryProperty.mimeType,
+                                }
                             );
                         } else {
                             // File URL option
                             const fileUrl = this.getNodeParameter('fileUrl', i) as string;
-
+                            
                             if (!fileUrl) {
                                 throw new NodeOperationError(this.getNode(), 'File URL is required!');
                             }
 
+                            // For URL-based uploads, we'll need to fetch the file first and then upload it
+                            const fileResponse = await this.helpers.request({
+                                method: 'GET',
+                                uri: fileUrl,
+                                encoding: null, // Return body as Buffer
+                            });
+                            
+                            // Determine MIME type from URL (simple approach)
+                            let mimeType = 'application/octet-stream';
+                            if (fileUrl.endsWith('.jpg') || fileUrl.endsWith('.jpeg')) {
+                                mimeType = 'image/jpeg';
+                            } else if (fileUrl.endsWith('.png')) {
+                                mimeType = 'image/png';
+                            } else if (fileUrl.endsWith('.mp4')) {
+                                mimeType = 'video/mp4';
+                            } else if (fileUrl.endsWith('.webm')) {
+                                mimeType = 'video/webm';
+                            } else if (fileUrl.endsWith('.mp3')) {
+                                mimeType = 'audio/mpeg';
+                            }
+                            
+                            // Upload the file using binary mode
                             responseData = await heyGenApiRequest.call(
                                 this,
                                 'POST',
-                                '/document',
-                                { url: fileUrl }
+                                '/asset',
+                                {},
+                                {},
+                                {
+                                    binary: true,
+                                    binaryData: fileResponse,
+                                    mimeType: mimeType,
+                                }
                             );
                         }
                     }
