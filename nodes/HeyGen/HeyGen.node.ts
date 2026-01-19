@@ -873,6 +873,30 @@ export class HeyGen implements INodeType {
                                 description: 'Text that the character will speak',
                             },
                             {
+                                displayName: 'Voice Locale',
+                                name: 'locale',
+                                type: 'string',
+                                displayOptions: {
+                                    show: {
+                                        voiceType: ['text'],
+                                    },
+                                },
+                                default: '',
+                                description: 'Voice accents/locales for multilingual voices',
+                            },
+                            {
+                                displayName: 'Emotion',
+                                name: 'emotion',
+                                type: 'string',
+                                displayOptions: {
+                                    show: {
+                                        voiceType: ['text'],
+                                    },
+                                },
+                                default: '',
+                                description: 'Adds emotion to voice, if supported. (Excited, Friendly, Serious, Soothing, Broadcaster)',
+                            },
+                            {
                                 displayName: 'Voice Speed',
                                 name: 'speed',
                                 type: 'number',
@@ -1560,6 +1584,8 @@ export class HeyGen implements INodeType {
                                     type: 'text',
                                     voice_id: input.voiceId,
                                     input_text: input.inputText,
+                                    locale: input.locale,
+                                    emotion: input.emotion,
                                     speed: input.speed || 1.0,
                                 };
                             } else if (input.voiceType === 'audio') {
@@ -1636,6 +1662,8 @@ export class HeyGen implements INodeType {
                     if (inputMethod === 'text') {
                         body.input_text = this.getNodeParameter('inputText', i) as string;
                         body.voice_id = this.getNodeParameter('voiceId', i) as string;
+                        body.locale = this.getNodeParameter('locale', i) as string;
+                        body.emotion = this.getNodeParameter('emotion', i) as string;
                     } else if (inputMethod === 'audio') {
                         body.input_audio = this.getNodeParameter('inputAudio', i) as string;
                     }
