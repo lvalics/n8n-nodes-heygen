@@ -1101,6 +1101,34 @@ export class HeyGen implements INodeType {
                 description: 'The ID of the voice that the avatar will use',
             },
             {
+                displayName: 'Voice Locale',
+                name: 'locale',
+                type: 'string',
+                displayOptions: {
+                    show: {
+                        resource: ['video'],
+                        operation: ['createWebmVideo'],
+                        inputMethod: ['text'],
+                    },
+                },
+                default: '',
+                description: 'Voice accents/locales for multilingual voices',
+            },
+            {
+                displayName: 'Emotion',
+                name: 'emotion',
+                type: 'string',
+                displayOptions: {
+                    show: {
+                        resource: ['video'],
+                        operation: ['createWebmVideo'],
+                        inputMethod: ['text'],
+                    },
+                },
+                default: '',
+                description: 'Adds emotion to voice, if supported. (Excited, Friendly, Serious, Soothing, Broadcaster)',
+            },
+            {
                 displayName: 'Input Audio',
                 name: 'inputAudio',
                 type: 'string',
@@ -1584,10 +1612,16 @@ export class HeyGen implements INodeType {
                                     type: 'text',
                                     voice_id: input.voiceId,
                                     input_text: input.inputText,
-                                    locale: input.locale,
-                                    emotion: input.emotion,
                                     speed: input.speed || 1.0,
                                 };
+                                // Add locale if provided
+                                if (input.locale) {
+                                    (videoInput.voice as IDataObject).locale = input.locale;
+                                }
+                                // Add emotion if provided
+                                if (input.emotion) {
+                                    (videoInput.voice as IDataObject).emotion = input.emotion;
+                                }
                             } else if (input.voiceType === 'audio') {
                                 videoInput.voice = {
                                     type: 'audio',
@@ -1662,8 +1696,18 @@ export class HeyGen implements INodeType {
                     if (inputMethod === 'text') {
                         body.input_text = this.getNodeParameter('inputText', i) as string;
                         body.voice_id = this.getNodeParameter('voiceId', i) as string;
-                        body.locale = this.getNodeParameter('locale', i) as string;
-                        body.emotion = this.getNodeParameter('emotion', i) as string;
+
+                        // Add locale if provided
+                        const locale = this.getNodeParameter('locale', i, '') as string;
+                        if (locale) {
+                            body.locale = locale;
+                        }
+
+                        // Add emotion if provided
+                        const emotion = this.getNodeParameter('emotion', i, '') as string;
+                        if (emotion) {
+                            body.emotion = emotion;
+                        }
                     } else if (inputMethod === 'audio') {
                         body.input_audio = this.getNodeParameter('inputAudio', i) as string;
                     }
